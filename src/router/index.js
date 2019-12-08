@@ -8,6 +8,7 @@ import Layout from '@/layout'
 
 /* Router Modules */
 import systemRouter from './modules/system'
+import settingRouter from './modules/setting'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -100,6 +101,8 @@ export const constantRoutes = [
 export const asyncRoutes = [
 
   systemRouter,
+
+  settingRouter,
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

@@ -5,19 +5,30 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="click">
+      <Notification class="notification-container right-menu-item hover-effect" />
+      <el-dropdown placement="bottom" class="avatar-container right-menu-item hover-effect" trigger="hover">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
+          <el-avatar class="user-avatar" size="small" :src="avatar+'?imageView2/1/w/80/h/80'" />
+          <span class="user-name">{{ name }}</span>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
             <el-dropdown-item>
-              首页
+              <svg-icon icon-class="dashboard" /> 首页
+            </el-dropdown-item>
+          </router-link>
+          <router-link to="/setting/user">
+            <el-dropdown-item>
+              <svg-icon icon-class="user-center" /> 个人中心
+            </el-dropdown-item>
+          </router-link>
+          <router-link to="/setting/account">
+            <el-dropdown-item>
+              <svg-icon icon-class="systemSet" /> 设置
             </el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">退出</span>
+            <span style="display:block;" @click="logout"><svg-icon icon-class="log-out" /> 退出</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -29,16 +40,19 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import Notification from '@/components/Notification'
 
 export default {
   components: {
     Breadcrumb,
-    Hamburger
+    Hamburger,
+    Notification
   },
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'avatar',
+      'name'
     ])
   },
   methods: {
@@ -105,18 +119,20 @@ export default {
       }
     }
 
-    .avatar-container {
-      margin-right: 30px;
+    .notification-container {
+      padding: 0 15px;
+      width: 60px;
+    }
 
+    .avatar-container {
+      padding-left: 0;
       .avatar-wrapper {
-        margin-top: 5px;
-        position: relative;
+        .user-name {
+          font-size: 14px;
+        }
 
         .user-avatar {
-          cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
+          vertical-align: middle;
         }
 
         .el-icon-caret-bottom {
