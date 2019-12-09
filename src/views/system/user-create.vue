@@ -1,33 +1,30 @@
 <template>
-  <div class="app-containe">
+  <div class="app-container">
     <aside>
-      Editor.md 建立在众多优秀的开源组件基础之上，遵循和使用 MIT License 开源协议，无论个人还是公司，都可以免费自由使用。
+      基于Vue的 markdown 编辑器，支持多种个性化功能
       <a target="_blank" class="link-type" href="http://editor.md.ipandao.com"> 文档 </a>
     </aside>
-    <el-button type="primary" size="medium" @click="getMarkDown">获取 Markdown</el-button>
-    <el-button type="primary" size="medium" @click="getHtml">获取 Html</el-button>
-    <EditorMd ref="editor-md" />
+    <el-row class="editor-container">
+      <el-button type="primary" size="medium" @click="getMarkDown">获取markdown</el-button>
+    </el-row>
+    <el-row class="editor-container mavonEditor">
+      <mavon-editor ref="mavon-editor" />
+    </el-row>
   </div>
 </template>
 
 <script>
-import EditorMd from '@/components/EditorMd'
+import MavonEditor from '@/components/MavonEditor'
 
 export default {
   name: 'UserCreate',
   components: {
-    EditorMd
+    MavonEditor
   },
   methods: {
     getMarkDown() {
-      const markdown = this.$refs['editor-md'].getMarkdown()
-      this.$alert(markdown, 'Markdown', {
-        confirmButtonText: '确定'
-      })
-    },
-    getHtml() {
-      const html = this.$refs['editor-md'].getHtml()
-      this.$alert(html, 'Html', {
+      const _this = this
+      _this.$alert(this.$refs['mavon-editor'].content, 'markdown', {
         confirmButtonText: '确定'
       })
     }
@@ -35,6 +32,11 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+  .editor-container{
+    margin-bottom: 20px;
+  }
+  .mavonEditor {
+    height: 100%;
+  }
 </style>
