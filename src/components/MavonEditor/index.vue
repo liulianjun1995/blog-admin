@@ -1,5 +1,5 @@
 <template>
-  <mavonEditor v-model="content" :autofocus="false" :toolbars="defaultOptions" />
+  <mavonEditor v-model="content" :autofocus="false" :toolbars="defaultOptions" code-style="monokai" />
 </template>
 
 <script>
