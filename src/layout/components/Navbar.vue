@@ -32,6 +32,7 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+      <RightPanel class="right-panel-container right-menu-item hover-effect" @click="showSettings" />
     </div>
   </div>
 </template>
@@ -41,12 +42,14 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import Notification from '@/components/Notification'
+import RightPanel from '@/components/RightPanel'
 
 export default {
   components: {
     Breadcrumb,
     Hamburger,
-    Notification
+    Notification,
+    RightPanel
   },
   computed: {
     ...mapGetters([
@@ -62,6 +65,12 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    showSettings() {
+      this.$store.dispatch('settings/changeSetting', {
+        key: 'showSettings',
+        value: true
+      })
     }
   }
 }
@@ -125,7 +134,6 @@ export default {
     }
 
     .avatar-container {
-      padding-left: 0;
       .avatar-wrapper {
         .user-name {
           font-size: 14px;
@@ -144,6 +152,7 @@ export default {
         }
       }
     }
+
   }
 }
 </style>

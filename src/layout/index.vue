@@ -8,15 +8,19 @@
         <tags-view v-if="needTagsView" />
       </div>
       <app-main />
-      <right-panel v-if="showSettings">
+      <el-drawer
+        :show-close="true"
+        size="260px"
+        :visible.sync="showSettings"
+        :with-header="false"
+      >
         <Settings />
-      </right-panel>
+      </el-drawer>
     </div>
   </div>
 </template>
 
 <script>
-import RightPanel from '@/components/RightPanel'
 import { Navbar, Sidebar, AppMain, TagsView, Settings } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 import { mapState } from 'vuex'
@@ -28,15 +32,24 @@ export default {
     Sidebar,
     AppMain,
     TagsView,
-    RightPanel,
     Settings
   },
   mixins: [ResizeMixin],
   computed: {
     ...mapState({
-      needTagsView: state => state.settings.tagsView,
-      showSettings: state => state.settings.showSettings
+      needTagsView: state => state.settings.tagsView
     }),
+    showSettings: {
+      get() {
+        return this.$store.state.settings.showSettings
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'showSettings',
+          value: val
+        })
+      }
+    },
     sidebar() {
       return this.$store.state.app.sidebar
     },
