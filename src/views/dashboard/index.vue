@@ -1,18 +1,30 @@
 <template>
   <div class="dashboard-container">
-    <panel-group @handleSetLineChartData="handleSetLineChartData" />
+    <el-row class="dashboard-container-row">
+      <Weather />
+    </el-row>
+    <el-row class="dashboard-container-row">
+      <panel-group @handleSetLineChartData="handleSetLineChartData" />
+    </el-row>
+    <el-row class="dashboard-container-row">
+      <OperateGroup />
+    </el-row>
   </div>
 </template>
 
 <script>
+import Weather from './components/Weather'
 import PanelGroup from './components/PanelGroup'
+import OperateGroup from './components/OperateGroup'
 
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'Dashboard',
   components: {
-    PanelGroup
+    Weather,
+    PanelGroup,
+    OperateGroup
   },
   computed: {
     ...mapGetters([
@@ -28,13 +40,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dashboard {
-  &-container {
-    margin: 30px;
+  .dashboard-container {
+    padding: 32px;
+    background-color: rgb(240, 242, 245);
+    position: relative;
+    .dashboard-container-row {
+      margin-bottom: 10px;
+    }
   }
-  &-text {
-    font-size: 30px;
-    line-height: 46px;
-  }
-}
 </style>
