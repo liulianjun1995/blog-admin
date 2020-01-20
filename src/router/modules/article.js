@@ -31,6 +31,12 @@ const articleRouter = {
       name: 'article-edit',
       meta: { title: '编辑文章', noCache: true, activeMenu: '/article/list' },
       hidden: true
+    },
+    {
+      path: 'tags',
+      component: () => import('@/views/article/tag'),
+      name: 'article-tags',
+      meta: { title: '标签列表', icon: 'tag' }
     }
   ]
 }

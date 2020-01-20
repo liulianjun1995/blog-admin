@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const prefix = '/user/'
+const prefix = '/admin/'
 
 export function login(data) {
   return request({
@@ -21,5 +21,13 @@ export function logout() {
   return request({
     url: prefix + '/logout',
     method: 'post'
+  })
+}
+
+export function fetchAdminOptions(params) {
+  return request({
+    url: prefix + 'options',
+    method: 'get',
+    params
   })
 }

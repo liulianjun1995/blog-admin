@@ -3,7 +3,7 @@
     <el-row class="content-row">
       <el-avatar class="user-avatar" :src="avatar" />
       <div class="weather-tips">
-        <p class="weather-tip-title">早安，{{ name }}，开始您一天的工作吧！</p>
+        <p class="weather-tip-title">早安，{{ name }}！开始您一天的工作吧！</p>
         <p class="weather-tip-desc"><svg-icon icon-class="weather" /> 今日阴转小雨，22℃ - 32℃，出门记得带伞哦。</p>
       </div>
     </el-row>

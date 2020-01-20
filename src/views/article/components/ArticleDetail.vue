@@ -15,34 +15,30 @@
         <el-row :gutter="10">
           <el-col :span="8">
             <el-form-item label="作者:" label-width="50px">
-              <el-select v-model="article.author" :remote-method="getRemoteUserList" filterable default-first-option remote placeholder="搜索用户">
-                <el-option v-for="(item,index) in userListOptions" :key="item+index" :label="item" :value="item" />
+              <el-select v-model="article.user_id" filterable default-first-option placeholder="搜索用户">
+                <el-option v-for="(item,index) in adminListOptions" :key="item+index" :label="item.name" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="10">
             <el-form-item label-width="120px" label="发布时间:" class="postInfo-container-item">
-              <el-date-picker v-model="displayTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期和时间" />
+              <el-date-picker v-model="article.created_at" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期和时间" />
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label-width="90px" label="重要性:" class="postInfo-container-item">
-              <el-rate
-                v-model="article.importance"
-                :max="3"
-                :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                :low-threshold="1"
-                :high-threshold="3"
-                style="display:inline-block"
-              />
+            <el-form-item label-width="90px" label="分类:" class="postInfo-container-item">
+              <el-select v-model="article.category_id" placeholder="分类" size="medium" clearable>
+                <el-option label="全部：分类" :value="0" />
+                <el-option v-for="item in categoryList" :key="item.id" :label="item.title" :value="item.id" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-form-item label="状态:" label-width="50px">
           <el-radio-group v-model="article.status" size="medium">
-            <el-radio-button label="published">发布</el-radio-button>
-            <el-radio-button label="draft">草稿</el-radio-button>
+            <el-radio-button :label="1">发布</el-radio-button>
+            <el-radio-button :label="2">草稿</el-radio-button>
           </el-radio-group>
         </el-form-item>
 
@@ -54,7 +50,7 @@
             :on-success="handleCoverSuccess"
             :before-upload="beforeCoverUpload"
           >
-            <img v-if="imageUrl" :src="imageUrl" class="cover">
+            <img v-if="article.cover" :src="article.cover" class="cover">
             <i v-else class="el-icon-plus cover-uploader-icon" />
           </el-upload>
         </el-form-item>
@@ -72,8 +68,8 @@
 <script>
 import MavonEditor from '@/components/MavonEditor'
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { fetchArticle } from '@/api/article'
-import { searchUser } from '@/api/remote-search'
+import { fetchArticle, fetchArticleCategory } from '@/api/article'
+import { fetchAdminOptions } from '@/api/admin'
 
 export default {
   name: 'ArticleDetail',
@@ -90,20 +86,20 @@ export default {
   data() {
     return {
       article: {
-        status: 'draft',
+        id: 0,
         title: '', // 文章题目
         content: '', // 文章内容
-        content_short: '', // 文章摘要
-        source_uri: '', // 文章外链
-        image_uri: '', // 文章图片
-        display_time: undefined, // 前台展示时间
-        id: undefined,
-        comment_disabled: false,
-        importance: 0
+        abstract: '', // 文章摘要
+        cover: '', // 文章图片
+        category_id: 0, // 文章分类
+        created_at: undefined, // 前台展示时间
+        is_top: 0,
+        is_recommend: 0,
+        status: 1
       },
-      imageUrl: '',
       disabled: false,
-      userListOptions: [],
+      adminListOptions: [],
+      categoryList: [],
       tempRoute: {}
     }
   },
@@ -118,6 +114,8 @@ export default {
     }
   },
   created() {
+    this.fetchArticleCategory()
+    this.fetchAdminOptions()
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id
       this.fetchData(id)
@@ -125,14 +123,24 @@ export default {
     this.tempRoute = Object.assign({}, this.$route)
   },
   methods: {
+    fetchArticleCategory() {
+      const _this = this
+      fetchArticleCategory().then(res => {
+        _this.categoryList = res.data
+      })
+    },
+    fetchAdminOptions() {
+      fetchAdminOptions().then(res => {
+        if (!res.data) return
+        this.adminListOptions = res.data
+      })
+    },
     fetchData(id) {
-      fetchArticle(id).then(response => {
-        this.article = response.data
-
-        this.setTagsViewTitle()
-        this.setPageTitle()
-      }).catch(err => {
-        console.log(err)
+      const _this = this
+      fetchArticle(id).then(res => {
+        Object.assign(_this.article, res.data)
+        _this.setTagsViewTitle()
+        _this.setPageTitle()
       })
     },
     setTagsViewTitle() {
@@ -144,14 +152,8 @@ export default {
       const title = '编辑文章'
       document.title = `${title} - ${this.article.id}`
     },
-    getRemoteUserList(query) {
-      searchUser(query).then(response => {
-        if (!response.data.items) return
-        this.userListOptions = response.data.items.map(v => v.name)
-      })
-    },
     handleCoverSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw)
+      this.article.cover = URL.createObjectURL(file.raw)
     },
     beforeCoverUpload(file) {
       const isJPG = file.type === 'image/jpeg'
