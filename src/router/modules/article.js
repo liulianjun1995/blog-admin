@@ -8,7 +8,7 @@ const articleRouter = {
   alwaysShow: true,
   meta: {
     title: '文章管理',
-    icon: 'article',
+    icon: 'article-set',
     roles: ['admin']
   },
   children: [

@@ -53,9 +53,10 @@ export default {
   methods: {
     showPopover() {
       const _this = this
+      _this.loading = true
       setTimeout(() => {
         _this.loading = false
-      }, 3000)
+      }, 1500)
     }
   }
 }
