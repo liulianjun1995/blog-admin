@@ -1,17 +1,19 @@
 <template>
   <div class="createArticle-container">
-    <el-form ref="ArticleForm" :model="article">
-
-      <Sticky :z-index="10" :class-name="'sub-navbar ' + article.status">
-        <el-button :disabled="disabled" type="success" size="medium" @click="submitForm">发布</el-button>
-      </Sticky>
+    <el-form ref="ArticleForm" v-loading="loading" :model="article">
 
       <div class="createArticle-main-container">
+
+        <el-form-item style="position: fixed; top: 90px; z-index: 10; right: 45px;">
+          <el-button :disabled="disabled" type="success" size="medium" @click="submitForm">发布</el-button>
+        </el-form-item>
 
         <el-form-item label="标题:" label-width="50px">
           <el-input v-model="article.title" placeholder="标题" />
         </el-form-item>
-
+        <el-form-item label="摘要:" label-width="50px">
+          <el-input v-model="article.abstract" type="textarea" placeholder="摘要" maxlength="150" :autosize="{ minRows: 3, maxRows: 5}" resize="none" show-word-limit />
+        </el-form-item>
         <el-row :gutter="10">
           <el-col :span="8">
             <el-form-item label="作者:" label-width="50px">
@@ -20,16 +22,23 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="10">
-            <el-form-item label-width="120px" label="发布时间:" class="postInfo-container-item">
-              <el-date-picker v-model="article.created_at" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期和时间" />
-            </el-form-item>
-          </el-col>
           <el-col :span="6">
             <el-form-item label-width="90px" label="分类:" class="postInfo-container-item">
               <el-select v-model="article.category_id" placeholder="分类" size="medium" clearable>
                 <el-option label="全部：分类" :value="0" />
                 <el-option v-for="item in categoryList" :key="item.id" :label="item.title" :value="item.id" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item label-width="90px" label="标签:" class="postInfo-container-item">
+              <el-select v-model="article.tags" multiple placeholder="请选择">
+                <el-option
+                  v-for="tag in tags"
+                  :key="tag.id"
+                  :label="tag.title"
+                  :value="tag.id"
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -50,7 +59,7 @@
             :on-success="handleCoverSuccess"
             :before-upload="beforeCoverUpload"
           >
-            <img v-if="article.cover" :src="article.cover" class="cover">
+            <img v-if="article.coverUrl" :src="article.coverUrl" class="cover">
             <i v-else class="el-icon-plus cover-uploader-icon" />
           </el-upload>
         </el-form-item>
@@ -67,15 +76,13 @@
 
 <script>
 import MavonEditor from '@/components/MavonEditor'
-import Sticky from '@/components/Sticky' // 粘性header组件
-import { fetchArticle, fetchArticleCategory } from '@/api/article'
+import { fetchArticle, fetchArticleCategory, createArticle, updateArticle, fetchTagList } from '@/api/article'
 import { fetchAdminOptions } from '@/api/admin'
 
 export default {
   name: 'ArticleDetail',
   components: {
-    MavonEditor,
-    Sticky
+    MavonEditor
   },
   props: {
     isEdit: {
@@ -85,14 +92,15 @@ export default {
   },
   data() {
     return {
+      loading: false,
       article: {
-        id: 0,
         title: '', // 文章题目
         content: '', // 文章内容
         abstract: '', // 文章摘要
         cover: '', // 文章图片
+        coverUrl: '', // 文章图片路径
         category_id: 0, // 文章分类
-        created_at: undefined, // 前台展示时间
+        tags: [], // 文章标签
         is_top: 0,
         is_recommend: 0,
         status: 1
@@ -100,6 +108,7 @@ export default {
       disabled: false,
       adminListOptions: [],
       categoryList: [],
+      tags: [],
       tempRoute: {}
     }
   },
@@ -111,14 +120,17 @@ export default {
       set(val) {
         this.article.display_time = new Date(val)
       }
+    },
+    id() {
+      return this.$route.params && this.$route.params.id
     }
   },
   created() {
     this.fetchArticleCategory()
     this.fetchAdminOptions()
+    this.fetchTagList()
     if (this.isEdit) {
-      const id = this.$route.params && this.$route.params.id
-      this.fetchData(id)
+      this.fetchData()
     }
     this.tempRoute = Object.assign({}, this.$route)
   },
@@ -129,28 +141,38 @@ export default {
         _this.categoryList = res.data
       })
     },
+    fetchTagList() {
+      const _this = this
+      fetchTagList().then(res => {
+        _this.tags = res.data
+      })
+    },
     fetchAdminOptions() {
       fetchAdminOptions().then(res => {
         if (!res.data) return
         this.adminListOptions = res.data
       })
     },
-    fetchData(id) {
+    fetchData() {
       const _this = this
-      fetchArticle(id).then(res => {
-        Object.assign(_this.article, res.data)
-        _this.setTagsViewTitle()
-        _this.setPageTitle()
-      })
+      if (_this.id) {
+        _this.loading = true
+        fetchArticle(_this.id).then(res => {
+          res.data.tags = Array.from(res.data.tags, t => t.id)
+          Object.assign(_this.article, res.data)
+          _this.setTagsViewTitle()
+          _this.setPageTitle()
+        }).then(() => { _this.loading = false })
+      }
     },
     setTagsViewTitle() {
       const title = '编辑文章'
-      const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.article.id}` })
+      const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.id}` })
       this.$store.dispatch('tagsView/updateVisitedView', route)
     },
     setPageTitle() {
       const title = '编辑文章'
-      document.title = `${title} - ${this.article.id}`
+      document.title = `${title} - ${this.id}`
     },
     handleCoverSuccess(res, file) {
       this.article.cover = URL.createObjectURL(file.raw)
@@ -170,16 +192,28 @@ export default {
     submitForm() {
       const _this = this
       _this.disabled = true
-      setTimeout(() => {
-        _this.$notify({
-          title: '成功',
-          message: '发布文章成功',
-          type: 'success',
-          duration: 2000
+      if (_this.isEdit) {
+        updateArticle(_this.article.id, _this.article).then(() => {
+          _this.$notify({
+            title: '成功',
+            message: '发布文章成功',
+            type: 'success',
+            duration: 2000
+          })
+          _this.disabled = false
         })
-        console.log(_this.article)
-        _this.disabled = false
-      }, 1000)
+      } else {
+        createArticle(_this.article).then(() => {
+          _this.$notify({
+            title: '成功',
+            message: '发布文章成功',
+            type: 'success',
+            duration: 2000
+          })
+          _this.$router.push({ name: 'article-list' })
+          _this.disabled = false
+        })
+      }
     },
     changeContent(value) {
       this.article.content = value
@@ -218,7 +252,7 @@ export default {
   .createArticle-container {
     position: relative;
     .createArticle-main-container {
-      padding: 40px 45px 20px 50px;
+      padding: 60px 45px 20px 50px;
     }
   }
 </style>

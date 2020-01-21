@@ -4,6 +4,7 @@
       :current-page.sync="page"
       :page-size="pageSize"
       :total="total"
+      hide-on-single-page
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
