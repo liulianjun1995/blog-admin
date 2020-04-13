@@ -14,7 +14,7 @@ const settingRouter = {
     {
       path: 'user',
       component: () => import('@/views/setting/user'),
-      name: 'user-center',
+      name: 'UserCenter',
       meta: { title: '个人中心', icon: 'user-center' }
     },
     {

@@ -2,7 +2,11 @@
   <el-card style="margin-bottom:20px;">
     <div class="user-profile">
       <div class="box-center">
-        <el-avatar class="user-avatar" :src="user.avatar" />
+        <Upload dir="avatar" @success="handleSuccess">
+          <div slot="upload">
+            <el-avatar class="user-avatar" :src="avatar" />
+          </div>
+        </Upload>
       </div>
       <div class="box-center">
         <div class="user-name text-center">{{ user.name }}</div>
@@ -62,26 +66,38 @@
 </template>
 
 <script>
+import Upload from '@/components/Upload'
+import { changeAvatar } from '@/api/user'
+
 export default {
   name: 'UserCard',
-  props: {
-    user: {
-      type: Object,
-      default: () => {
-        return {
-          name: '',
-          email: '',
-          avatar: '',
-          roles: '',
-          tags: []
-        }
-      }
-    }
-  },
+  components: { Upload },
   data() {
     return {
+      user: {
+        name: '',
+        email: '',
+        avatar: '',
+        roles: '',
+        tags: []
+      },
       inputTag: '',
-      inputVisible: false
+      inputVisible: false,
+      uploadUrl: '',
+      uploadData: {}
+    }
+  },
+  computed: {
+    avatar: {
+      get() {
+        return this.$store.state.user.avatar
+      },
+      set(val) {
+        this.$store.dispatch('user/changeInfo', {
+          key: 'avatar',
+          value: val
+        })
+      }
     }
   },
   methods: {
@@ -99,6 +115,13 @@ export default {
       this.inputVisible = true
       this.$nextTick(_ => {
         this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+    // 文件上传成功处理
+    handleSuccess(avatar) {
+      const _this = this
+      changeAvatar({ avatar }).then(() => {
+        _this.avatar = avatar
       })
     }
   }

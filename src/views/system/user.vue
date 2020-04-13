@@ -49,8 +49,6 @@
 </template>
 
 <script>
-import { getList } from '@/api/table'
-
 export default {
   name: 'User',
   filters: {
@@ -66,7 +64,7 @@ export default {
   data() {
     return {
       list: null,
-      listLoading: true
+      listLoading: false
     }
   },
   created() {
@@ -74,11 +72,7 @@ export default {
   },
   methods: {
     fetchData() {
-      this.listLoading = true
-      getList().then(response => {
-        this.list = response.data.items
-        this.listLoading = false
-      })
+      //
     },
     create() {
       this.$router.push({ name: 'user-create' })

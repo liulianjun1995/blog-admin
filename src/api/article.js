@@ -10,28 +10,6 @@ export function fetchList(params) {
   })
 }
 
-export function fetchArticle(id) {
-  return request({
-    url: prefix + `detail/${id}`,
-    method: 'get'
-  })
-}
-
-export function fetchArticleCategory() {
-  return request({
-    url: prefix + 'category',
-    method: 'get'
-  })
-}
-
-export function changeStatus(id, status) {
-  return request({
-    url: prefix + `status/${id}`,
-    method: 'post',
-    data: { status }
-  })
-}
-
 export function createArticle(data) {
   return request({
     url: prefix + `create`,
@@ -40,25 +18,24 @@ export function createArticle(data) {
   })
 }
 
-export function uploadImage(data) {
+export function updateArticle(id, data) {
   return request({
-    url: prefix + `upload-image`,
+    url: prefix + `${id}/update`,
     method: 'post',
     data
   })
 }
 
-export function deleteImage(image) {
+export function fetchArticle(id) {
   return request({
-    url: prefix + `delete-image`,
-    method: 'post',
-    data: { image }
+    url: prefix + `${id}/detail`,
+    method: 'get'
   })
 }
 
-export function updateArticle(id, data) {
+export function changeProfile(id, data) {
   return request({
-    url: prefix + `update/${id}`,
+    url: prefix + `${id}/profile`,
     method: 'post',
     data
   })

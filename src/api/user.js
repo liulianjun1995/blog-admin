@@ -1,10 +1,10 @@
 import request from '@/utils/request'
 
-const prefix = '/user/'
+// const prefix = '/user/'
 
 export function login(data) {
   return request({
-    url: 'login',
+    url: 'auth/login',
     method: 'post',
     data
   })
@@ -12,14 +12,22 @@ export function login(data) {
 
 export function getInfo() {
   return request({
-    url: 'info',
+    url: 'auth/info',
     method: 'get'
   })
 }
 
 export function logout() {
   return request({
-    url: prefix + '/logout',
+    url: 'auth/logout',
     method: 'post'
+  })
+}
+
+export function changeAvatar(data) {
+  return request({
+    url: 'auth/avatar',
+    method: 'post',
+    data
   })
 }

@@ -26,8 +26,10 @@
     "path-to-regexp": "2.4.0",
     "scriptjs": "^2.5.9",
     "snowflake-id": "^1.1.0",
+    "sortablejs": "^1.10.2",
     "vue": "2.6.10",
     "vue-count-to": "^1.0.13",
+    "vue-markdown-editor-orh": "^1.1.2",
     "vue-router": "3.0.6",
     "vuex": "3.1.0",
     "weather-js": "^2.0.0"

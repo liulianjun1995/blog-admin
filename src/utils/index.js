@@ -136,3 +136,9 @@ export function removeClass(ele, cls) {
     ele.className = ele.className.replace(reg, ' ')
   }
 }
+
+export function makeRandomFileName(name) {
+  const crypto = require('crypto')
+  const suffix = name.substr(name.lastIndexOf('.'))
+  return crypto.randomBytes(5).toString('hex').slice(0, 10) + suffix
+}

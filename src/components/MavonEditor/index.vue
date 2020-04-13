@@ -4,21 +4,19 @@
     :value="value"
     :autofocus="false"
     :toolbars="options"
-    code-style="monokai"
+    code-style="dracula"
     :style="{'min-height': minHeight}"
     @imgAdd="imgAdd"
-    @imgDel="imgDel"
     @change="change"
   />
 </template>
 
 <script>
 import { mavonEditor } from 'mavon-editor'
-import 'mavon-editor/dist/css/index.css'
-
 import defaultOptions from './default-options'
-
-import { uploadImage, deleteImage } from '@/api/article'
+import { ApiGetSignature } from '@/api/oss'
+import { makeRandomFileName } from '@/utils'
+import axios from 'axios'
 
 export default {
   name: 'MavonEditor',
@@ -48,19 +46,24 @@ export default {
     // 绑定@imgAdd event
     imgAdd(pos, $file) {
       const _this = this
-      // 第一步.将图片上传到服务器.
-      const formData = new FormData()
-      formData.append('cover', $file)
-      uploadImage(formData).then(res => {
-        _this.$refs.md.$img2Url(pos, res.data.url)
-      })
-    },
-    imgDel(pos) {
-      if (pos.length <= 0) {
-        return false
-      }
-      deleteImage(pos[0]).then(res => {
-        console.log(res)
+      const fileName = makeRandomFileName($file.name)
+      ApiGetSignature({ dir: 'article' }).then((res) => {
+        const data = new FormData()
+        const url = res.data.host
+        const key = res.data.dir + fileName
+        data.append('policy', res.data.policy)
+        data.append('OSSAccessKeyId', res.data.accessid)
+        data.append('signature', res.data.signature)
+        data.append('host', res.data.host)
+        data.append('callback', res.data.callback)
+        data.append('key', res.data.dir + fileName)
+        data.append('file', $file)
+        data.append('success_action_status', 200)
+        axios.post(url, data).then(res => {
+          if (res.status === 200) {
+            _this.$refs.md.$img2Url(pos, url + key)
+          }
+        })
       })
     }
   }
@@ -68,6 +71,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import "~mavon-editor/dist/css/index.css";
   .v-note-wrapper {
     z-index: unset;
     &.fullscreen {

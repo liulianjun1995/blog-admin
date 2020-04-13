@@ -48,29 +48,28 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
 
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+      if (!value || value.trim().length === 0) {
+        callback(new Error('请输入用户名'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+      if (!value || value.trim().length === 0) {
+        callback(new Error('请输入密码'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -107,6 +106,12 @@ export default {
           this.$store.dispatch('user/login', this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
+            this.$notify({
+              title: '成功',
+              message: '欢迎回来',
+              type: 'success',
+              duration: 2000
+            })
           }).catch(() => {
             this.loading = false
           })

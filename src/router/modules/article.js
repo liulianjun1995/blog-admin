@@ -15,20 +15,20 @@ const articleRouter = {
     {
       path: 'list',
       component: () => import('@/views/article/list'),
-      name: 'article-list',
+      name: 'ArticleList',
       meta: { title: '文章列表', icon: 'list' }
     },
     {
       path: 'create',
       component: () => import('@/views/article/create'),
-      name: 'article-create',
+      name: 'ArticleCreate',
       meta: { title: '创建文章', noCache: true, activeMenu: '/article/list' },
       hidden: true
     },
     {
       path: 'edit/:id(\\d+)',
       component: () => import('@/views/article/edit'),
-      name: 'article-edit',
+      name: 'ArticleEdit',
       meta: { title: '编辑文章', noCache: true, activeMenu: '/article/list' },
       hidden: true
     },
@@ -36,7 +36,14 @@ const articleRouter = {
       path: 'tags',
       component: () => import('@/views/article/tag'),
       name: 'article-tags',
-      meta: { title: '标签列表', icon: 'tag' }
+      meta: { title: '标签列表', icon: 'tag' },
+      hidden: true
+    },
+    {
+      path: 'category',
+      component: () => import('@/views/article/category'),
+      name: 'ArticleCategory',
+      meta: { title: '文章分类', icon: 'category' }
     }
   ]
 }

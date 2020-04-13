@@ -15,13 +15,13 @@ const systemRouter = {
     {
       path: 'user',
       component: () => import('@/views/system/user'),
-      name: 'user',
+      name: 'User',
       meta: { title: '用户管理', icon: 'user' }
     },
     {
       path: 'user/create',
       component: () => import('@/views/system/user-create'),
-      name: 'user-create',
+      name: 'UserCreate',
       meta: { title: '创建用户', icon: 'create' },
       hidden: true
     }

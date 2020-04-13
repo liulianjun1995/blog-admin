@@ -21,6 +21,11 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  CHANGE_INFO: (state, { key, value }) => {
+    if (state.hasOwnProperty(key)) {
+      state[key] = value
+    }
   }
 }
 
@@ -51,13 +56,13 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { name, avatar, roles } = data
+        const { username, avatar, roles } = data
 
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
 
-        commit('SET_NAME', name)
+        commit('SET_NAME', username)
         commit('SET_AVATAR', avatar)
         commit('SET_ROLES', roles)
         resolve(data)
@@ -65,6 +70,10 @@ const actions = {
         reject(error)
       })
     })
+  },
+
+  changeInfo({ commit }, data) {
+    commit('CHANGE_INFO', data)
   },
 
   // user logout

@@ -1,11 +1,11 @@
 <template>
   <div :class="{'hidden':hidden}" class="pagination-container">
     <el-pagination
-      :current-page.sync="page"
+      background
+      layout="total, prev, pager, next"
+      :current-page.sync="currentPage"
       :page-size="pageSize"
       :total="total"
-      hide-on-single-page
-      @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
   </div>
@@ -21,10 +21,6 @@ export default {
       required: true,
       type: Number
     },
-    page: {
-      type: Number,
-      default: 1
-    },
     pageSize: {
       type: Number,
       default: 15
@@ -38,15 +34,19 @@ export default {
       default: false
     }
   },
-  methods: {
-    handleSizeChange(val) {
-      this.$emit('pagination', { page: this.currentPage, limit: val })
-      if (this.autoScroll) {
-        scrollTo(0, 800)
+  computed: {
+    currentPage: {
+      get() {
+        return this.page
+      },
+      set(val) {
+        this.$emit('update:page', val)
       }
-    },
+    }
+  },
+  methods: {
     handleCurrentChange(val) {
-      this.$emit('pagination', { page: val, limit: this.pageSize })
+      this.$emit('pagination', val)
       if (this.autoScroll) {
         scrollTo(0, 800)
       }
